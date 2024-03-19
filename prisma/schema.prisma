@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  name      String?
+  password  String? // For accounts that are not linked to an OAuth provider
+  providers Provider[]
+}
+
+model Provider {
+  id              String @id @default(uuid())
+  oauthProvider   String // only "google" for now
+  oauthProviderId String // OAuth provider's user id
+  userId          String // user's id
+  user            User   @relation(fields: [userId], references: [id])
+
+  @@unique([oauthProvider, oauthProviderId])
+}
