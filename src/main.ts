@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { FRONTEND_URL } from './environment';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,13 @@ async function bootstrap() {
 
   // Set global prefix
   app.setGlobalPrefix(globalPrefix);
+
+  // Enable CORS
+  app.enableCors({
+    origin: FRONTEND_URL,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
 
   // Start app
   const port = process.env.PORT || 3000;
