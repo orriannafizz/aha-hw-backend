@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RedisModule } from '@nestjs-modules/ioredis';
 import { UsersModule } from './modules/users/users.module';
-import { SharedModule } from './shared';
+import { RedisModule } from '@nestjs-modules/ioredis';
 import { BullModule } from '@nestjs/bull';
+import { SharedModule } from './shared';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
+    UsersModule,
     SharedModule,
     RedisModule.forRoot({
       type: 'single',
@@ -28,9 +31,13 @@ import { BullModule } from '@nestjs/bull';
         removeOnFail: true,
       },
     }),
-    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*');
+  }
+}

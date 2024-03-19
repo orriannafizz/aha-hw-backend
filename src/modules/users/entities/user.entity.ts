@@ -29,6 +29,18 @@ export class UserEntity implements User {
   password: string;
 
   @ApiProperty({
+    example: 0,
+    description: 'The login times of the user',
+  })
+  loginTimes: number;
+
+  @ApiHideProperty()
+  emailVerifyToken: string;
+
+  @ApiHideProperty()
+  refreshToken: string;
+
+  @ApiProperty({
     example: true,
     description: 'The isVerified email of the user',
   })
@@ -42,5 +54,7 @@ export class UserEntity implements User {
 }
 
 export class UserPartialEntity extends PartialType(
-  OmitType(UserEntity, ['password']),
-) {}
+  OmitType(UserEntity, ['password', 'emailVerifyToken']),
+) {
+  hasPassword?: boolean;
+}

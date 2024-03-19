@@ -8,14 +8,17 @@ datasource db {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  email      String     @unique
-  username   String?
-  password   String? // For accounts that are not linked to an OAuth provider
-  isVerified Boolean    @default(false)
-  providers  Provider[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id               String     @id @default(uuid())
+  email            String     @unique
+  username         String?
+  loginTimes       Int        @default(0)
+  password         String? // For accounts that are not linked to an OAuth provider
+  isVerified       Boolean    @default(false)
+  emailVerifyToken String?    @unique @default(uuid())
+  refreshToken     String?    @unique
+  providers        Provider[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Provider {
