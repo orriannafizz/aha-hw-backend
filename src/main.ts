@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { FRONTEND_URL } from './environment';
+import { ValidationPipe } from '@nestjs/common';
+import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +19,16 @@ async function bootstrap() {
 
   // Set global prefix
   app.setGlobalPrefix(globalPrefix);
+
+  // Set global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+
+  // Set global interceptors
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   // Enable CORS
   app.enableCors({
