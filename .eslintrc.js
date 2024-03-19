@@ -27,5 +27,6 @@ module.exports = {
     'object-curly-spacing': 'off',
     'indent': 'off',
     'max-len': 'off',
+    'space-before-function-paren': 'off',
   },
 };
