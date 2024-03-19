@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { PrismaService } from './shared/prisma/prisma.service';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PrismaService } from './shared/prisma/prisma.service';
         db: 0,
       },
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
