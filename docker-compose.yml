@@ -1,0 +1,16 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    container_name: aha_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: nlnl
+      POSTGRES_PASSWORD: nlnl
+      POSTGRES_DB: nlnl
+      TZ: Asia/Taipei
+    ports:
+      - 45432:5432
+    volumes:
+      - ./docker/bin/postgres/:/docker-entrypoint-initdb.d/
+      - ./docker/data/postgresql/:/var/lib/postgresql/data
