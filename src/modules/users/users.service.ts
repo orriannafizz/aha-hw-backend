@@ -2,10 +2,16 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { UserPartialEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Queue } from 'bull';
+import { EMAIL_QUEUE } from 'src/constants';
+import { InjectQueue } from '@nestjs/bull';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @InjectQueue(EMAIL_QUEUE.QUEUE) private readonly queue: Queue,
+  ) {}
 
   async findOne(id: string): Promise<UserPartialEntity> {
     return this.prismaService.user.findUnique({
@@ -44,5 +50,27 @@ export class UsersService {
     });
 
     return this.findOne(_user.id);
+  }
+
+  async addVerifyEmailEvent() {
+    // add verify email event to queue
+    await this.queue.add(
+      EMAIL_QUEUE.EVENTS.VERIFICATION,
+      {
+        email: 'orriannafizz@gmail.com',
+        username: 'brian',
+        emailVerifyToken: 'hi',
+      },
+      {
+        // retry 3 times with 5 seconds delay
+        attempts: 3,
+        backoff: {
+          type: 'fixed',
+          delay: 5000,
+        },
+      },
+    );
+
+    return { message: 'Email sent' };
   }
 }
