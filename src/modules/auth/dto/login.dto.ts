@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * The login DTO.
+ */
 export class LoginDto {
   @ApiProperty({
     example: 'user@example.com',

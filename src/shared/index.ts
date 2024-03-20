@@ -19,4 +19,7 @@ import { EMAIL_QUEUE } from 'src/constants';
   providers: [PrismaService, MailProcessor],
   exports: [BullModule, PrismaService],
 })
+/**
+ * Global shared module for the application.
+ */
 export class SharedModule {}

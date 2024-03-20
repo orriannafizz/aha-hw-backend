@@ -5,6 +5,9 @@ import { FRONTEND_URL } from './environment';
 import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 
+/**
+ * The application bootstrap function.
+ */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';

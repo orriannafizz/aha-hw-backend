@@ -15,11 +15,10 @@ import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards';
 import { Response, Request as ExpressRequest } from 'express';
 import { FRONTEND_URL, NODE_ENV } from '../../environment';
-
+@Controller('auth')
 /**
  * Controller for handling authentication requests.
  */
-@Controller('auth')
 export class AuthController {
   /**
    * @param {AuthService} authService The authentication service.

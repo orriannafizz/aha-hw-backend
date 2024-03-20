@@ -6,11 +6,10 @@ import { Queue } from 'bull';
 import { EMAIL_QUEUE } from 'src/constants';
 import { InjectQueue } from '@nestjs/bull';
 import * as bcrypt from 'bcrypt';
-
+@Injectable()
 /**
  * Service dealing with user operations.
  */
-@Injectable()
 export class UsersService {
   /**
    * Creates an instance of UsersService.

@@ -5,11 +5,10 @@ import { LoginDto } from './dto/login.dto';
 import { GoogleUserEntity } from './entities/google-user.entity';
 import * as bcrypt from 'bcrypt';
 import { TokensEntity } from './entities/tokens.entity';
-
+@Injectable()
 /**
  * Service responsible for authentication operations, including login, JWT token generation and validation.
  */
-@Injectable()
 export class AuthService {
   /**
    * Constructs the authentication service with necessary dependencies.

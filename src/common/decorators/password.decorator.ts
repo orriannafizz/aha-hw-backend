@@ -4,6 +4,10 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
+/**
+ * @param {ValidationOptions} validationOptions
+ * @return  {Function} its validate the password contains at least one lowercase letter
+ */
 export function ContainsLowercaseLetter(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({
@@ -23,6 +27,10 @@ export function ContainsLowercaseLetter(validationOptions?: ValidationOptions) {
   };
 }
 
+/**
+ * @param {ValidationOptions} validationOptions
+ * @return {Function} its validate the password contains at least one uppercase letter
+ */
 export function ContainsUppercaseLetter(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({
@@ -42,6 +50,10 @@ export function ContainsUppercaseLetter(validationOptions?: ValidationOptions) {
   };
 }
 
+/**
+ * @param {ValidationOptions} validationOptions
+ * @return {Function} its validate the password contains at least one digit
+ */
 export function ContainsDigit(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({
@@ -61,6 +73,10 @@ export function ContainsDigit(validationOptions?: ValidationOptions) {
   };
 }
 
+/**
+ * @param {ValidationOptions} validationOptions
+ * @return {Function} its validate the password contains at least one special character
+ */
 export function ContainsSpecialCharacter(
   validationOptions?: ValidationOptions,
 ) {

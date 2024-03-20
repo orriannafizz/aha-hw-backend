@@ -9,7 +9,13 @@ import {
 } from '../../../environment';
 
 @Injectable()
+/**
+ * Google OAuth strategy.
+ */
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+  /**
+   * The Google strategy constructor.
+   */
   constructor() {
     super({
       clientID: GOOGLE_CLIENT_ID,
@@ -19,11 +25,18 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['email', 'profile'],
     });
   }
+
+  /**
+   * @param {string} accessToken the access token from google
+   * @param {string} refreshToken the refresh token from google
+   * @param {any} profile the user profile from google, e.g. email, photos, id, displayName
+   * @param {VerifyCallback} done the callback function to call after the validation
+   */
   async validate(
     accessToken: string,
     refreshToken: string,
     profile: any,
-    done: VerifyCallback
+    done: VerifyCallback,
   ): Promise<any> {
     const { emails, photos, id, displayName } = profile;
     const user: GoogleUserEntity = {

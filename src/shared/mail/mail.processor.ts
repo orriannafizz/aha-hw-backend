@@ -3,17 +3,30 @@ import { Job } from 'bull';
 import { MailService } from '@sendgrid/mail';
 import { BACKEND_URL, SEND_GRID_API_KEY } from '../../environment';
 import { EMAIL_QUEUE } from 'src/constants';
-
 @Processor(EMAIL_QUEUE.QUEUE)
+/**
+ * Processor for handling email tasks in the background.
+ */
 export class MailProcessor {
-  mailService = new MailService();
+  private mailService = new MailService();
 
+  /**
+   * Creates an instance of the MailProcessor and initializes the mail service with the SendGrid API key.
+   */
   constructor() {
     this.mailService.setApiKey(SEND_GRID_API_KEY);
   }
 
+  /**
+   * Processes a job to send an email verification message.
+   *
+   * This method is triggered for jobs of type EMAIL_QUEUE.EVENTS.VERIFICATION.
+   * It constructs and sends an email using the job's data, which includes the recipient's email address, username, and email verification token.
+   *
+   * @param {Job} job The job instance containing data for the email to be sent.
+   */
   @Process(EMAIL_QUEUE.EVENTS.VERIFICATION)
-  async handleSendEmail(job: Job) {
+  handleSendEmail(job: Job) {
     const { username, email, emailVerifyToken } = job.data;
     const msg = {
       to: email,

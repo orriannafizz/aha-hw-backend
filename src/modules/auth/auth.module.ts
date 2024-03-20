@@ -18,4 +18,7 @@ import { JWT_EXPIRES_IN, JWT_SECRET } from '../../environment';
   providers: [JwtStrategy, GoogleStrategy, AuthService],
   exports: [PassportModule, JwtModule],
 })
+/**
+ * AuthModule
+ */
 export class AuthModule {}

@@ -6,6 +6,9 @@ import {
 } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 
+/**
+ * User entity to implement the User interface from Prisma.
+ */
 export class UserEntity implements User {
   @ApiProperty({
     example: 'efb5c2ab-ecdb-45a3-9c8b-e96b92e13251',
@@ -53,6 +56,9 @@ export class UserEntity implements User {
   updatedAt: Date;
 }
 
+/**
+ * Partial type of the UserEntity to be used in responses.
+ */
 export class UserPartialEntity extends PartialType(
   OmitType(UserEntity, ['password', 'emailVerifyToken']),
 ) {

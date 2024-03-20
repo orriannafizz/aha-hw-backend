@@ -6,6 +6,9 @@ import {
   ContainsUppercaseLetter,
 } from 'src/common/decorators/password.decorator';
 
+/**
+ * The create user DTO.
+ */
 export class CreateUserDto {
   @IsString()
   username: string;
