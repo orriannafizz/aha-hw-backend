@@ -7,11 +7,13 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { BullModule } from '@nestjs/bull';
 import { SharedModule } from './shared';
 import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     UsersModule,
     SharedModule,
+    ConfigModule.forRoot(),
     RedisModule.forRoot({
       type: 'single',
       options: {

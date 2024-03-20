@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Request,
   Res,
@@ -17,6 +18,7 @@ import { FRONTEND_URL } from 'src/environment';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards';
 import { UserStatics } from './dto/user-statics.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('users')
 /**
@@ -87,5 +89,21 @@ export class UsersController {
     } catch (err) {
       return err;
     }
+  }
+
+  /**
+   *
+   * @param {Request} req The request object.
+   * @param {ResetPasswordDto} dto The reset password details.
+   * @return {Promise<void>} The result of the password reset.
+   */
+  @Patch('reset-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  async resetPassword(@Request() req, @Body() dto: ResetPasswordDto) {
+    return this.usersService.resetPassword({
+      ...dto,
+      id: req.user.id,
+    });
   }
 }

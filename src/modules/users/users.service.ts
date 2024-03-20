@@ -7,6 +7,7 @@ import { EMAIL_QUEUE } from 'src/constants';
 import { InjectQueue } from '@nestjs/bull';
 import * as bcrypt from 'bcrypt';
 import { UserStatics } from './dto/user-statics.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 @Injectable()
 /**
  * Service dealing with user operations.
@@ -200,5 +201,84 @@ export class UsersService {
     }
 
     return { message: 'Email verified successfully' };
+  }
+
+  /**
+   * @param {ResetPasswordDto} dto The reset password details.
+   * @return {Promise<UserPartialEntity>} Return findOne user
+   */
+  async resetPassword(dto: ResetPasswordDto) {
+    try {
+      const { id, oldPassword, newPassword } = dto;
+      // get user by email
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      // if no user found, throw an error
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      // if user is register by oauth
+      const isPasswordNull = user.password === null;
+
+      // compare old password
+      if (!isPasswordNull) {
+        try {
+          const isPasswordMatch = await bcrypt.compare(
+            oldPassword,
+            user.password,
+          );
+
+          if (!isPasswordMatch) {
+            throw new HttpException(
+              'Invalid old password',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        } catch (error) {
+          throw new HttpException(
+            'Invalid old password',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        try {
+          const isNewPasswordSameAsOld = await bcrypt.compare(
+            newPassword,
+            user.password,
+          );
+          if (isNewPasswordSameAsOld) {
+            throw new HttpException(
+              'New password cannot be same as old password',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        } catch (error) {
+          throw new HttpException(
+            'New password cannot be same as old password',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      }
+
+      // hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await this.prismaService.user.update({
+        where: {
+          id,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      return this.findOne(user.id);
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 }
