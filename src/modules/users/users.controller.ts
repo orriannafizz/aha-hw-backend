@@ -40,6 +40,17 @@ export class UsersController {
   }
 
   /**
+   * @param {Request} req the request object.
+   * @return {Promise<UserPartialEntity>} The user details.
+   */
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async me(@Request() req): Promise<UserPartialEntity> {
+    return this.usersService.findOne(req.user.id);
+  }
+
+  /**
    * Sends a verification email to the user's email address.
    * @param {Request} req The request object.
    * @return {Promise<{message:string}>}
