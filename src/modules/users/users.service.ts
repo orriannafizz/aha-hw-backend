@@ -6,6 +6,7 @@ import { Queue } from 'bull';
 import { EMAIL_QUEUE } from 'src/constants';
 import { InjectQueue } from '@nestjs/bull';
 import * as bcrypt from 'bcrypt';
+import { UserStatics } from './dto/user-statics.dto';
 @Injectable()
 /**
  * Service dealing with user operations.
@@ -81,6 +82,53 @@ export class UsersService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  /**
+   * get Daily  statics
+   * @return {Promise<UserStatics>} The user's daily statistics.
+   */
+  async getUserStatics(): Promise<UserStatics> {
+    const usersCount = await this.prismaService.user.count();
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 6);
+
+    // YYYY-MM-DD
+    const formattedToday = today.toISOString().split('T')[0];
+    const formattedSevenDaysAgo = sevenDaysAgo.toISOString().split('T')[0];
+
+    const todayStatics = (await this.prismaService.dailyStatics.findFirst({
+      where: {
+        date: formattedToday,
+      },
+      select: {
+        loginTimes: true,
+      },
+    })) || { loginTimes: 0 };
+
+    const { loginTimes: todayLoginTimes } = todayStatics;
+
+    const last7DaysStatics = (await this.prismaService.dailyStatics.aggregate({
+      _avg: {
+        loginTimes: true,
+      },
+      where: {
+        date: {
+          gte: formattedSevenDaysAgo,
+          lte: formattedToday,
+        },
+      },
+    })) || { _avg: { loginTimes: 0 } };
+
+    const { _avg } = last7DaysStatics;
+    const { loginTimes: last7DaysAvgLoginTimes } = _avg;
+
+    return {
+      usersCount,
+      todayLoginTimes,
+      last7DaysAvgLoginTimes: last7DaysAvgLoginTimes || 0,
+    };
   }
 
   /**

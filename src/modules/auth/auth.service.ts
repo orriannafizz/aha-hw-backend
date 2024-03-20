@@ -5,6 +5,8 @@ import { LoginDto } from './dto/login.dto';
 import { GoogleUserEntity } from './entities/google-user.entity';
 import * as bcrypt from 'bcrypt';
 import { TokensEntity } from './entities/tokens.entity';
+import { DailyStatics, User } from '@prisma/client';
+
 @Injectable()
 /**
  * Service responsible for authentication operations, including login, JWT token generation and validation.
@@ -58,13 +60,50 @@ export class AuthService {
         }
       }
 
-      const tokens = await this.generateAndUpdateJwtTokens(_user.id);
+      const [tokens] = await Promise.all([
+        // generate jwt token
+        this.generateAndUpdateJwtTokens(_user.id),
+        // update user login times
+        this.updateUserLoginTimes(_user.id),
+      ]);
 
-      // generate jwt token
       return tokens;
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+  }
+
+  /**
+   * Updates the user's login times and the daily statics login times.
+   * @param {string} userId user id
+   * @return {Promise<[User, DailyStatics]>} The updated user and daily statics entities.
+   */
+  updateUserLoginTimes(userId: string): Promise<[User, DailyStatics]> {
+    const today = new Date().toISOString().split('T')[0];
+    return Promise.all([
+      this.prismaService.user.update({
+        where: { id: userId },
+        data: {
+          loginTimes: {
+            increment: 1,
+          },
+        },
+      }),
+      this.prismaService.dailyStatics.upsert({
+        where: {
+          date: today,
+        },
+        update: {
+          loginTimes: {
+            increment: 1,
+          },
+        },
+        create: {
+          date: today,
+          loginTimes: 1,
+        },
+      }),
+    ]);
   }
 
   /**

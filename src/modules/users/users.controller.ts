@@ -16,6 +16,7 @@ import { UserPartialEntity } from './entities/user.entity';
 import { FRONTEND_URL } from 'src/environment';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards';
+import { UserStatics } from './dto/user-statics.dto';
 
 @Controller('users')
 /**
@@ -48,6 +49,16 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async sendVerifyEmail(@Request() req) {
     return this.usersService.addVerifyEmailEvent(req.user.id);
+  }
+
+  /**
+   * gets the user's daily statistics.
+   * @return {Promise<UserStatics>} user login statistics.
+   */
+  @Get('statics')
+  @HttpCode(HttpStatus.OK)
+  async getUserStatics(): Promise<UserStatics> {
+    return this.usersService.getUserStatics();
   }
 
   /**

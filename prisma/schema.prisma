@@ -30,3 +30,8 @@ model Provider {
 
   @@unique([oauthProvider, oauthProviderId])
 }
+
+model DailyStatics {
+  date       String @id
+  loginTimes Int    @default(0)
+}
