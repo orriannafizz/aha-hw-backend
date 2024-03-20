@@ -1,7 +1,21 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { UserPartialEntity } from './entities/user.entity';
+import { FRONTEND_URL } from 'src/environment';
+import { Response } from 'express';
+import { JwtAuthGuard } from '../auth/guards';
 
 @Controller('users')
 /**
@@ -26,11 +40,30 @@ export class UsersController {
 
   /**
    * Sends a verification email to the user's email address.
+   * @param {Request} req The request object.
    * @return {Promise<{message:string}>}
    */
   @Post('send-verify-email')
   @HttpCode(HttpStatus.ACCEPTED)
-  async sendVerifyEmail() {
-    return this.usersService.addVerifyEmailEvent();
+  @UseGuards(JwtAuthGuard)
+  async sendVerifyEmail(@Request() req) {
+    return this.usersService.addVerifyEmailEvent(req.user.id);
+  }
+
+  /**
+   * Verifies the user's email address.
+   * @param {string} token The verification token.
+   * @param {Response} res The response object.
+   * @return {Promise<void>} The result of the verification.
+   */
+  @Get('verify-email/:token')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Param('token') token: string, @Res() res: Response) {
+    try {
+      await this.usersService.verifyEmail(token);
+      res.redirect(FRONTEND_URL);
+    } catch (err) {
+      return err;
+    }
   }
 }

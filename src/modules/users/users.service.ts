@@ -85,18 +85,39 @@ export class UsersService {
 
   /**
    * Adds a verify email event to the queue.
+   * @param {string} id The ID of the user to send the email to.
    * @return {Promise<{ message: string }>} Confirmation that the email was sent.
    */
-  async addVerifyEmailEvent(): Promise<{ message: string }> {
+  async addVerifyEmailEvent(id: string): Promise<{ message: string }> {
+    // get email and username by user id
+
+    const user = await this.prismaService.user.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const { email, username, isVerified, emailVerifyToken } = user;
+
+    // check if email is already verified
+    if (isVerified) {
+      throw new HttpException('Email already verified', HttpStatus.BAD_REQUEST);
+    }
+
+    // add verify email event to queue
     await this.queue.add(
       EMAIL_QUEUE.EVENTS.VERIFICATION,
       {
-        email: 'example@gmail.com',
-        username: 'username',
-        emailVerifyToken: 'token',
+        email,
+        username,
+        emailVerifyToken,
       },
       {
-        // Retry 3 times with 5 seconds delay
+        // retry 3 times with 5 seconds delay
         attempts: 3,
         backoff: {
           type: 'fixed',
@@ -106,5 +127,30 @@ export class UsersService {
     );
 
     return { message: 'Email sent' };
+  }
+
+  /**
+   * verify email by code
+   * @param {string} emailVerifyToken email token
+   * @return {{ message: string }} Confirmation that the email was verified.
+   */
+  async verifyEmail(emailVerifyToken: string) {
+    // get user by token
+    const user = await this.prismaService.user.update({
+      where: {
+        emailVerifyToken,
+      },
+      data: {
+        isVerified: true,
+        emailVerifyToken: null,
+      },
+    });
+
+    // if no user found, throw an error
+    if (!user) {
+      throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
+    }
+
+    return { message: 'Email verified successfully' };
   }
 }
