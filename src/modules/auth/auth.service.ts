@@ -124,9 +124,7 @@ export class AuthService {
     // sign jwt token with different expiration times based on token type
     let token: string;
     if (tokenType === 'access') {
-      token = this.jwtService.sign(payload, {
-        expiresIn: '10s',
-      });
+      token = this.jwtService.sign(payload);
     } else {
       token = this.jwtService.sign(payload, {
         expiresIn: '7d',
