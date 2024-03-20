@@ -29,19 +29,32 @@ export class UsersService {
    * @return {Promise<UserPartialEntity>} The found user.
    */
   async findOne(id: string): Promise<UserPartialEntity> {
-    return this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: {
         id,
       },
       select: {
         id: true,
         username: true,
+        loginTimes: true,
         email: true,
         isVerified: true,
+        password: true,
         createdAt: true,
         updatedAt: true,
       },
     });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const { password, ...rest } = user;
+
+    return {
+      ...rest,
+      hasPassword: !!password,
+    };
   }
 
   /**
