@@ -1,4 +1,4 @@
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '@/shared/prisma/prisma.service';
 
 describe('PrismaService', () => {
   let prismaService: PrismaService;

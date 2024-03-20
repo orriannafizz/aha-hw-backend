@@ -4,7 +4,7 @@ import {
   ContainsLowercaseLetter,
   ContainsSpecialCharacter,
   ContainsUppercaseLetter,
-} from 'src/common/decorators/password.decorator';
+} from '@/common/decorators/password.decorator';
 
 /**
  * The create user DTO.

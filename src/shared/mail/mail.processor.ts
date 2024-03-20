@@ -1,8 +1,8 @@
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { MailService } from '@sendgrid/mail';
-import { BACKEND_URL, SEND_GRID_API_KEY } from '../../environment';
-import { EMAIL_QUEUE } from 'src/constants';
+import { BACKEND_URL, SEND_GRID_API_KEY } from '@/environment';
+import { EMAIL_QUEUE } from '@/constants';
 @Processor(EMAIL_QUEUE.QUEUE)
 /**
  * Processor for handling email tasks in the background.

@@ -2,7 +2,7 @@ import { BullModule } from '@nestjs/bull';
 import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { MailProcessor } from './mail/mail.processor';
-import { EMAIL_QUEUE } from 'src/constants';
+import { EMAIL_QUEUE } from '@/constants';
 
 @Global()
 @Module({

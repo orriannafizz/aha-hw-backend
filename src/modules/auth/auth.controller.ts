@@ -14,7 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards';
 import { Response, Request as ExpressRequest } from 'express';
-import { FRONTEND_URL, NODE_ENV } from '../../environment';
+import { FRONTEND_URL, NODE_ENV } from '@/environment';
 @Controller('auth')
 /**
  * Controller for handling authentication requests.
