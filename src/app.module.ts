@@ -8,6 +8,7 @@ import { BullModule } from '@nestjs/bull';
 import { SharedModule } from './shared';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } from './environment';
 
 @Module({
   imports: [
@@ -17,15 +18,17 @@ import { ConfigModule } from '@nestjs/config';
     RedisModule.forRoot({
       type: 'single',
       options: {
-        host: 'localhost',
-        port: 46379,
+        host: REDIS_HOST,
+        port: REDIS_PORT,
+        password: REDIS_PASSWORD,
         db: 0,
       },
     }),
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
-        port: 46379,
+        host: REDIS_HOST,
+        port: REDIS_PORT,
+        password: REDIS_PASSWORD,
         db: 0,
       },
       defaultJobOptions: {
