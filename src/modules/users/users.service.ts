@@ -99,7 +99,7 @@ export class UsersService {
   }
 
   /**
-   * get Daily  statics
+   * get Daily statics
    * @return {Promise<UserStatics>} The user's daily statistics.
    */
   async getUserStatics(): Promise<UserStatics> {
