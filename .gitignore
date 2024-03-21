@@ -39,3 +39,4 @@ docker/
 
 # env
 .env
+.vercel
