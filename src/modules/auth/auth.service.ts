@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -38,34 +43,24 @@ export class AuthService {
       });
 
       if (!_user) {
-        throw new HttpException('Invalid Email', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException('Invalid Email');
       }
+
       // if user is oauth login, skip password check
-      if (!isOauthLogin) {
-        // compare password
-        try {
-          const isPasswordValid = await bcrypt.compare(
-            dto.password,
-            _user.password,
-          );
-
-          if (!isPasswordValid) {
-            throw new HttpException(
-              'Invalid Password',
-              HttpStatus.UNAUTHORIZED,
-            );
-          }
-        } catch (error) {
-          throw new HttpException('Invalid Password', HttpStatus.UNAUTHORIZED);
-        }
+      if (
+        !isOauthLogin &&
+        !(await bcrypt.compare(dto.password, _user.password))
+      ) {
+        throw new UnauthorizedException('Invalid Password');
       }
+      console.log('here');
+      // Generate tokens and do not wait for user login times update
+      const tokens = this.generateAndUpdateJwtTokens(_user.id);
 
-      const [tokens] = await Promise.all([
-        // generate jwt token
-        this.generateAndUpdateJwtTokens(_user.id),
-        // update user login times
-        this.updateUserLoginTimes(_user.id),
-      ]);
+      // Update user login times without waiting for it to finish
+      this.updateUserLoginTimes(_user.id).catch((error) => {
+        console.error('Error updating login times:', error);
+      });
 
       return tokens;
     } catch (error) {
@@ -247,9 +242,9 @@ export class AuthService {
   /**
    * Refreshes the JWT tokens based on the provided refresh token.
    * @param {string} refreshToken The refresh token.
-   * @return {Promise<TokensEntity>} The new access and refresh tokens.
+   * @return {Promise<string>} The new access token
    */
-  async refreshToken(refreshToken: string): Promise<TokensEntity> {
+  async refreshToken(refreshToken: string): Promise<string> {
     try {
       const user = await this.prismaService.user.findUnique({
         where: {
@@ -262,7 +257,7 @@ export class AuthService {
           HttpStatus.UNAUTHORIZED,
         );
       }
-      return this.generateAndUpdateJwtTokens(user.id);
+      return this.generateJwtToken(user.id, user.username, 'access');
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }

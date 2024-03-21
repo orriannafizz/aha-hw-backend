@@ -14,7 +14,8 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards';
 import { Response, Request as ExpressRequest } from 'express';
-import { FRONTEND_URL, NODE_ENV } from '../../environment';
+import { FRONTEND_URL } from '../../environment';
+
 @Controller('auth')
 /**
  * Controller for handling authentication requests.
@@ -33,21 +34,8 @@ export class AuthController {
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: LoginDto, @Res() response: Response) {
-    const data = await this.authService.login(dto);
-    const { accessToken, refreshToken } = data;
-
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    response.send({
-      accessToken: accessToken,
-    });
+  login(@Body() dto: LoginDto) {
+    return this.authService.login(dto);
   }
 
   /**
@@ -58,13 +46,18 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Res() response: Response) {
-    response.cookie('refreshToken', '', {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 0,
-    });
+    // response.cookie('accessToken', '', {
+    //   sameSite: 'none',
+    //   path: '/',
+    //   maxAge: 0,
+    // });
+
+    // response.cookie('refreshToken', '', {
+    //   sameSite: 'none',
+    //   httpOnly: true,
+    //   path: '/',
+    //   maxAge: 0,
+    // });
 
     response.sendStatus(HttpStatus.OK);
   }
@@ -77,22 +70,11 @@ export class AuthController {
    */
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Req() req: ExpressRequest, @Res() response: Response) {
+  async refreshToken(@Req() req: ExpressRequest) {
     const _refreshToken = req.cookies['refreshToken'];
-    const tokens = await this.authService.refreshToken(_refreshToken);
-
-    const { accessToken, refreshToken } = tokens;
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    response.send({
-      accessToken: accessToken,
-    });
+    return {
+      accessToken: await this.authService.refreshToken(_refreshToken),
+    };
   }
 
   /**
@@ -108,32 +90,18 @@ export class AuthController {
   /**
    * Handles the Google OAuth callback.
    * @param {Request} req The express request object, injected by NestJS.
-   * @param {Response} res The express response object.
+   * @param {Response} response The express response object.
    * @return {Promise<void>} A promise that resolves when the operation is complete.
    */
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async googleAuthRedirect(@Request() req, @Res() res: Response) {
-    const loginResult = await this.authService.googleLogin(req);
-    const { accessToken, refreshToken } = loginResult;
+  async googleAuthRedirect(@Request() req, @Res() response: Response) {
+    const { accessToken, refreshToken } =
+      await this.authService.googleLogin(req);
 
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.redirect(FRONTEND_URL);
+    response.redirect(
+      `${FRONTEND_URL}/login/google/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`,
+    );
   }
 }

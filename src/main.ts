@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { FRONTEND_URL } from './environment';
 import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
+import { FRONTEND_URL } from './environment';
 
 /**
  * The application bootstrap function.
@@ -35,7 +35,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: FRONTEND_URL,
+    origin: [FRONTEND_URL, 'http://localhost:3001'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
