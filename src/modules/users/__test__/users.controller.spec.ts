@@ -3,12 +3,12 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
-import { SharedModule } from '@/shared';
+import { SharedModule } from '../../../shared';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserStatics } from '../dto/user-statics.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { userStub } from './stubs/user.stub';
-import { FRONTEND_URL } from '@/environment';
+import { FRONTEND_URL } from '../../../environment';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('UsersController', () => {

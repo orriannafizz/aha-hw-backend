@@ -14,11 +14,11 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { UserPartialEntity } from './entities/user.entity';
-import { FRONTEND_URL } from '@/environment';
+import { FRONTEND_URL } from '../../environment';
 import { Response } from 'express';
-import { JwtAuthGuard } from '@/modules/auth/guards/jwt.guard';
 import { UserStatics } from './dto/user-statics.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { JwtAuthGuard } from '../auth/guards';
 
 @Controller('users')
 /**

@@ -4,8 +4,8 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { BullModule, getQueueToken } from '@nestjs/bull';
 import { UsersService } from '../users.service';
-import { PrismaService } from '@/shared/prisma/prisma.service';
-import { EMAIL_QUEUE } from '@/constants';
+import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { EMAIL_QUEUE } from '../../../constants';
 
 jest.mock('bcrypt', () => ({
   compare: jest.fn().mockImplementation((inputPassword) => {

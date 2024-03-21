@@ -1,12 +1,12 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
-import { GoogleUserEntity } from '@/modules/auth/entities/google-user.entity';
+import { GoogleUserEntity } from '../entities/google-user.entity';
 import {
   BACKEND_URL,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-} from '@/environment';
+} from '../../../environment';
 
 @Injectable()
 /**

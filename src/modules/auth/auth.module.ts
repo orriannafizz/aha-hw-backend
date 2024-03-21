@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy, GoogleStrategy } from './strategies';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JWT_EXPIRES_IN, JWT_SECRET } from '@/environment';
+import { JWT_EXPIRES_IN, JWT_SECRET } from '../../environment';
 
 @Module({
   imports: [

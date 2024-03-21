@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '@/shared/prisma/prisma.service';
+import { PrismaService } from '../../shared/prisma/prisma.service';
 import { UserPartialEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Queue } from 'bull';
-import { EMAIL_QUEUE } from '@/constants';
+import { EMAIL_QUEUE } from '../../constants';
 import { InjectQueue } from '@nestjs/bull';
 import * as bcrypt from 'bcrypt';
 import { UserStatics } from './dto/user-statics.dto';

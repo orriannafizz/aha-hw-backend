@@ -1,4 +1,4 @@
-import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
+import { CreateUserDto } from '../../../modules/users/dto/create-user.dto';
 import { validate } from 'class-validator';
 
 describe('CustomValidators', () => {

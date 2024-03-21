@@ -3,7 +3,7 @@ import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { HttpStatus } from '@nestjs/common';
-import { FRONTEND_URL } from '@/environment';
+import { FRONTEND_URL } from '../../../environment';
 
 describe('AuthController', () => {
   let controller: AuthController;
