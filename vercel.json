@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "scripts": {
+    "start": "node src/main.js",
+    "build": "prisma generate && nest build",
+    "deploy": "vercel --prod"
+  },
   "builds": [
     {
       "src": "src/main.ts",
