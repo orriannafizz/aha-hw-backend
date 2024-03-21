@@ -53,7 +53,6 @@ export class AuthService {
       ) {
         throw new UnauthorizedException('Invalid Password');
       }
-      console.log('here');
       // Generate tokens and do not wait for user login times update
       const tokens = this.generateAndUpdateJwtTokens(_user.id);
 
