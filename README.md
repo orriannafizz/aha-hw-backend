@@ -43,7 +43,3 @@
 ```bash
 yarn start
 ```
-
-## Others
-
-- test coverage: 73%

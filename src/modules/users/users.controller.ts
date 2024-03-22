@@ -86,6 +86,7 @@ export class UsersController {
     status: HttpStatus.ACCEPTED,
     description: 'Verification email sent',
   })
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiBearerAuth(SWAGGER_BEARER_AUTH.USER)
   async sendVerifyEmail(@Request() req) {
