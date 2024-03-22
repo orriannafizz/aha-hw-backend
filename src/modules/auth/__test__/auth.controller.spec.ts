@@ -3,7 +3,6 @@ import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { FRONTEND_URL } from '../../../environment';
-import { HttpStatus } from '@nestjs/common';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -45,16 +44,6 @@ describe('AuthController', () => {
       const response = await controller.login(dto);
       expect(authService.login).toHaveBeenCalledWith(dto);
       expect(response).toEqual(tokens);
-    });
-  });
-
-  describe('logout', () => {
-    it('should clear the refreshToken cookie', async () => {
-      const response = {
-        sendStatus: jest.fn(),
-      };
-      await controller.logout(response as any);
-      expect(response.sendStatus).toHaveBeenCalledWith(HttpStatus.OK);
     });
   });
 

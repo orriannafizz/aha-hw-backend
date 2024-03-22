@@ -15,6 +15,8 @@ import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards';
 import { Response, Request as ExpressRequest } from 'express';
 import { FRONTEND_URL } from '../../environment';
+import { ApiOperation, ApiResponse, OmitType } from '@nestjs/swagger';
+import { TokensEntity } from './entities/tokens.entity';
 
 @Controller('auth')
 /**
@@ -34,32 +36,18 @@ export class AuthController {
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() dto: LoginDto) {
+  @ApiOperation({ summary: 'Login a user' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User logged in successfully.',
+    type: TokensEntity,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Invalid email or password.',
+  })
+  login(@Body() dto: LoginDto): Promise<TokensEntity> {
     return this.authService.login(dto);
-  }
-
-  /**
-   * Handles user logout requests.
-   * @param {Response} response The express response object.
-   * @return {void}
-   */
-  @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  logout(@Res() response: Response) {
-    // response.cookie('accessToken', '', {
-    //   sameSite: 'none',
-    //   path: '/',
-    //   maxAge: 0,
-    // });
-
-    // response.cookie('refreshToken', '', {
-    //   sameSite: 'none',
-    //   httpOnly: true,
-    //   path: '/',
-    //   maxAge: 0,
-    // });
-
-    response.sendStatus(HttpStatus.OK);
   }
 
   /**
@@ -70,6 +58,16 @@ export class AuthController {
    */
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Access token refreshed successfully',
+    type: OmitType(TokensEntity, ['refreshToken']),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Invalid refresh token',
+  })
   async refreshToken(@Req() req: ExpressRequest) {
     const _refreshToken = req.cookies['refreshToken'];
     return {
@@ -82,6 +80,7 @@ export class AuthController {
    * @return {string} A greeting message.
    */
   @Get('google')
+  @ApiOperation({ summary: 'Go to Google OAuth login' })
   @UseGuards(GoogleOAuthGuard)
   async googleLogin() {
     return 'hi';
@@ -95,13 +94,26 @@ export class AuthController {
    */
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.FOUND)
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  @ApiResponse({
+    status: HttpStatus.FOUND,
+    description: 'Google OAuth callback redirect',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
   async googleAuthRedirect(@Request() req, @Res() response: Response) {
-    const { accessToken, refreshToken } =
-      await this.authService.googleLogin(req);
+    try {
+      const { accessToken, refreshToken } =
+        await this.authService.googleLogin(req);
 
-    response.redirect(
-      `${FRONTEND_URL}/login/google/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`,
-    );
+      response.redirect(
+        `${FRONTEND_URL}/login/google/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`,
+      );
+    } catch (e) {
+      response.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
