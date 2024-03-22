@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { FRONTEND_URL } from './environment';
+import { SWAGGER_BEARER_AUTH } from './constants';
 
 /**
  * The application bootstrap function.
@@ -16,6 +17,17 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Aha backend API')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      SWAGGER_BEARER_AUTH.USER,
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document);

@@ -5,6 +5,7 @@ import {
   PartialType,
 } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { IsBoolean } from 'class-validator';
 
 /**
  * User entity to implement the User interface from Prisma.
@@ -49,10 +50,16 @@ export class UserEntity implements User {
   })
   isVerified: boolean;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '2021-10-17T16:00:00.000Z',
+    description: 'The date the user was created',
+  })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '2021-10-17T16:00:00.000Z',
+    description: 'The date the user was last updated',
+  })
   updatedAt: Date;
 }
 
@@ -62,5 +69,10 @@ export class UserEntity implements User {
 export class UserPartialEntity extends PartialType(
   OmitType(UserEntity, ['password', 'emailVerifyToken']),
 ) {
+  @IsBoolean()
+  @ApiProperty({
+    example: true,
+    description: 'The user has a password or not',
+  })
   hasPassword?: boolean;
 }

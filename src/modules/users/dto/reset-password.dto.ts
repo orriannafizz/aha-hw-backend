@@ -1,3 +1,4 @@
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsStrongPassword } from 'class-validator';
 
 /**
@@ -6,11 +7,20 @@ import { IsOptional, IsString, IsStrongPassword } from 'class-validator';
 export class ResetPasswordDto {
   @IsString()
   @IsOptional()
+  @ApiHideProperty()
   id: string;
 
-  @IsStrongPassword()
+  @IsStrongPassword({ minLength: 8 })
+  @ApiProperty({
+    example: 'oldPassword123!',
+    description: 'The old password of the user',
+  })
   oldPassword: string;
 
-  @IsStrongPassword()
+  @ApiProperty({
+    example: 'newPassword123!',
+    description: 'The new password of the user',
+  })
+  @IsStrongPassword({ minLength: 8 })
   newPassword: string;
 }

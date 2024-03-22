@@ -19,8 +19,17 @@ import { Response } from 'express';
 import { UserStatics } from './dto/user-statics.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from '../auth/guards';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { SWAGGER_BEARER_AUTH } from '../../constants';
 
 @Controller('users')
+@ApiTags('users')
 /**
  * Controller for handling user-related requests.
  */
@@ -37,6 +46,12 @@ export class UsersController {
    * @return {UserPartialEntity} The created user.
    */
   @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a user' })
+  @ApiCreatedResponse({
+    description: 'The user has been successfully created.',
+    type: UserPartialEntity,
+  })
   async create(@Body() dto: CreateUserDto): Promise<UserPartialEntity> {
     return this.usersService.create(dto);
   }
@@ -48,6 +63,13 @@ export class UsersController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get user data' })
+  @ApiCreatedResponse({
+    description: 'The user data has been successfully retrieved.',
+    type: UserPartialEntity,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiBearerAuth(SWAGGER_BEARER_AUTH.USER)
   async me(@Request() req): Promise<UserPartialEntity> {
     return this.usersService.findOne(req.user.id);
   }
@@ -59,7 +81,13 @@ export class UsersController {
    */
   @Post('send-verify-email')
   @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Send verification email to the user' })
+  @ApiResponse({
+    status: HttpStatus.ACCEPTED,
+    description: 'Verification email sent',
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiBearerAuth(SWAGGER_BEARER_AUTH.USER)
   async sendVerifyEmail(@Request() req) {
     return this.usersService.addVerifyEmailEvent(req.user.id);
   }
@@ -69,6 +97,12 @@ export class UsersController {
    * @return {Promise<UserStatics>} user login statistics.
    */
   @Get('statics')
+  @ApiOperation({ summary: 'Get user statics' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The user statics has been successfully retrieved.',
+    type: UserStatics,
+  })
   @HttpCode(HttpStatus.OK)
   async getUserStatics(): Promise<UserStatics> {
     return this.usersService.getUserStatics();
@@ -82,6 +116,12 @@ export class UsersController {
    */
   @Get('verify-email/:token')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify user email' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Email verified successfully, redirecting...',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid token' })
   async verifyEmail(@Param('token') token: string, @Res() res: Response) {
     try {
       await this.usersService.verifyEmail(token);
@@ -98,8 +138,16 @@ export class UsersController {
    * @return {Promise<void>} The result of the password reset.
    */
   @Patch('reset-password')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Reset the user password' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Password reset successfully',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiBearerAuth(SWAGGER_BEARER_AUTH.USER)
   async resetPassword(@Request() req, @Body() dto: ResetPasswordDto) {
     return this.usersService.resetPassword({
       ...dto,

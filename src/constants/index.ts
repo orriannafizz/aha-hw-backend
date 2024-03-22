@@ -4,3 +4,7 @@ export const EMAIL_QUEUE = {
     VERIFICATION: 'verification',
   },
 };
+
+export const SWAGGER_BEARER_AUTH = {
+  USER: 'user',
+};

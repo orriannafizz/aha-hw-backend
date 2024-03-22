@@ -240,36 +240,22 @@ export class UsersService {
 
       // compare old password
       if (!isPasswordNull) {
-        try {
-          const isPasswordMatch = await bcrypt.compare(
-            oldPassword,
-            user.password,
-          );
-
-          if (!isPasswordMatch) {
-            throw new HttpException(
-              'Invalid old password',
-              HttpStatus.BAD_REQUEST,
-            );
-          }
-        } catch (error) {
+        const isPasswordMatch = await bcrypt.compare(
+          oldPassword,
+          user.password,
+        );
+        if (!isPasswordMatch) {
           throw new HttpException(
             'Invalid old password',
             HttpStatus.BAD_REQUEST,
           );
         }
-        try {
-          const isNewPasswordSameAsOld = await bcrypt.compare(
-            newPassword,
-            user.password,
-          );
-          if (isNewPasswordSameAsOld) {
-            throw new HttpException(
-              'New password cannot be same as old password',
-              HttpStatus.BAD_REQUEST,
-            );
-          }
-        } catch (error) {
+
+        const isNewPasswordSameAsOld = await bcrypt.compare(
+          newPassword,
+          user.password,
+        );
+        if (isNewPasswordSameAsOld) {
           throw new HttpException(
             'New password cannot be same as old password',
             HttpStatus.BAD_REQUEST,
