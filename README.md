@@ -1,5 +1,10 @@
 # AHA Backend Homework
 
+## Me
+
+- Brian Chuang
+- email: orriannafizz@gmail.com
+
 ## URLs
 
 - frontend: https://aha-hw-frontend.vercel.app/
@@ -9,7 +14,7 @@
 ## Repos
 
 - frontend: https://github.com/orriannafizz/aha-hw-frontend
-- backe: https://github.com/orriannafizz/aha-hw-backend
+- backed: https://github.com/orriannafizz/aha-hw-backend
 
 ## Tech stack:
 
@@ -33,9 +38,11 @@
   <img src="https://cdn.simpleicons.org/redis/DC382D" height="40" alt="redis logo"  />
 </div>
 
-# How to run
+## How to run
 
-- yarn start
+```bash
+yarn start
+```
 
 ## Others
 
