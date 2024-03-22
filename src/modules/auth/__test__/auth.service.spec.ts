@@ -242,17 +242,11 @@ describe('AuthService', () => {
 
     it('should return new tokens for valid refresh token', async () => {
       const user = { id: '1', refreshToken: 'validToken' };
-      const newTokens: TokensEntity = {
-        accessToken: 'new-access-token',
-        refreshToken: 'new-refresh-token',
-      };
+      const newToken: string = 'newToken';
       prismaService.user.findUnique = jest.fn().mockResolvedValue(user);
-      authService.generateAndUpdateJwtTokens = jest
-        .fn()
-        .mockResolvedValue(newTokens);
-
+      authService.generateJwtToken = jest.fn().mockResolvedValue(newToken);
       const result = await authService.refreshToken(user.refreshToken);
-      expect(result).toEqual(newTokens);
+      expect(result).toEqual(newToken);
     });
   });
 });
