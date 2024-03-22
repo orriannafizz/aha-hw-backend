@@ -11,6 +11,7 @@ export class ResetPasswordDto {
   id: string;
 
   @IsStrongPassword({ minLength: 8 })
+  @IsOptional()
   @ApiProperty({
     example: 'oldPassword123!',
     description: 'The old password of the user',
