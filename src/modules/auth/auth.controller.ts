@@ -15,10 +15,11 @@ import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards';
 import { Response, Request as ExpressRequest } from 'express';
 import { FRONTEND_URL } from '../../environment';
-import { ApiOperation, ApiResponse, OmitType } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, OmitType } from '@nestjs/swagger';
 import { TokensEntity } from './entities/tokens.entity';
 
 @Controller('auth')
+@ApiTags('auth')
 /**
  * Controller for handling authentication requests.
  */
